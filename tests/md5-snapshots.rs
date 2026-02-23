@@ -58,7 +58,6 @@ md5_snapshot_tests! {
     smallvec_with_macro_use;
     smallvec_with_use;
     strsim;
-    whiteread;
 }
 
 fn snapshot_test(name: &str, _: MutexGuard<'_, ()>) -> anyhow::Result<String> {
