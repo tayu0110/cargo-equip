@@ -305,7 +305,7 @@ impl MetadataExt for cm::Metadata {
             }
             ([], None) => bail!("no lib/bin/example target in this workspace"),
             ([t], _) => Ok(*t),
-            ([ts @ ..], _) => bail!(
+            (ts, _) => bail!(
                 "could not determine which target to choose. Use the `--bin` option, `--example` \
                  option, `--lib` option, or `--src` option to specify a target.\n\
                  available targets: {}\n\
