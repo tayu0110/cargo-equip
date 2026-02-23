@@ -1703,11 +1703,7 @@ fn main() {}
 /// ccccc
 struct Foo;
 "#,
-            r#"fn main() {}
-
-         
-struct Foo;
-"#,
+            "fn main() {}\n\n         \nstruct Foo;\n",
         )?;
 
         test(
@@ -1742,20 +1738,13 @@ fn main() {
 }
 // ggggg
 "#,
-            r#"fn main() {
-            
-             println!("Hi!");         
-            
-}
-        
-"#,
+            "fn main() {\n            \n             println!(\"Hi!\");         \n            \n}\n        \n",
         )?;
 
         test(
             r#"/* aaaaa */ type A = (i64, i64, i64); // bbbbb
 "#,
-            r#"type A = (i64, i64, i64);         
-"#,
+            "type A = (i64, i64, i64);         \n",
         )?;
 
         test(
@@ -1764,10 +1753,7 @@ fn main() {
     let _ = 1 + 1; // ううううう
 }
 "#,
-            r#"fn foo() {
-    let _ = 1 + 1;         
-}
-"#,
+            "fn foo() {\n    let _ = 1 + 1;         \n}\n",
         )
     }
 }
