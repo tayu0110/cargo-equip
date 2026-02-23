@@ -12,6 +12,8 @@ use semver::Version;
 use std::collections::{BTreeMap, BTreeSet};
 
 pub(crate) const MSRV: Version = Version::new(1, 64, 0);
+#[allow(deprecated)]
+const DUMMY_SPAN: Span = Span::DUMMY;
 
 pub(crate) fn list_proc_macro_dylibs<P: FnMut(&cm::PackageId) -> bool>(
     cargo_messages: &[cm::Message],
@@ -136,9 +138,9 @@ impl<'msg> ProcMacroExpander<'msg> {
                     )),
                     attr.map(|f| from_proc_macro2_group(&f())).as_ref(),
                     vec![],
-                    Span::DUMMY,
-                    Span::DUMMY,
-                    Span::DUMMY,
+                    DUMMY_SPAN,
+                    DUMMY_SPAN,
+                    DUMMY_SPAN,
                 )
                 .map_err(|e| anyhow!("{}", e))
                 .with_context(|| "rust-analyzer error")?
@@ -161,8 +163,8 @@ fn from_proc_macro2_group(group: &proc_macro2::Group) -> tt::Subtree<Span> {
 
     fn from_proc_macro2_delimiter(delimiter: proc_macro2::Delimiter) -> tt::Delimiter<Span> {
         tt::Delimiter {
-            open: Span::DUMMY,
-            close: Span::DUMMY,
+            open: DUMMY_SPAN,
+            close: DUMMY_SPAN,
             kind: match delimiter {
                 proc_macro2::Delimiter::Parenthesis => DelimiterKind::Parenthesis,
                 proc_macro2::Delimiter::Brace => DelimiterKind::Brace,
@@ -184,7 +186,7 @@ fn from_proc_macro2_group(group: &proc_macro2::Group) -> tt::Subtree<Span> {
     fn from_proc_macro2_ident(ident: &proc_macro2::Ident) -> tt::Ident<Span> {
         tt::Ident {
             text: ident.to_string().into(),
-            span: Span::DUMMY,
+            span: DUMMY_SPAN,
         }
     }
 
@@ -192,7 +194,7 @@ fn from_proc_macro2_group(group: &proc_macro2::Group) -> tt::Subtree<Span> {
         tt::Punct {
             char: punct.as_char(),
             spacing: from_proc_macro2_spacing(punct.spacing()),
-            span: Span::DUMMY,
+            span: DUMMY_SPAN,
         }
     }
 
@@ -206,7 +208,7 @@ fn from_proc_macro2_group(group: &proc_macro2::Group) -> tt::Subtree<Span> {
     fn from_proc_macro2_literal(lit: &proc_macro2::Literal) -> tt::Literal<Span> {
         tt::Literal {
             text: lit.to_string().into(),
-            span: Span::DUMMY,
+            span: DUMMY_SPAN,
         }
     }
 }

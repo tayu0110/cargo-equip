@@ -1667,7 +1667,7 @@ impl<'opt> CodeEdit<'opt> {
             }
             acc += "\n";
         }
-        self.string = acc.trim_start().to_owned();
+        acc.trim_start().clone_into(&mut self.string);
         self.apply()
     }
 }
