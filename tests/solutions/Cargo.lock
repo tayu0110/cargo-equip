@@ -54,11 +54,10 @@ dependencies = [
 
 [[package]]
 name = "proconio"
-version = "0.4.3"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91c333be3af2936f8e810300bc74fe4d0cc168ebc04ab02a28c5b1060fa1bd59"
+checksum = "0eb404616795079e2390e7115acf0ada24e9332e8476de2aada7bacb9992dc9e"
 dependencies = [
- "lazy_static",
  "proconio-derive",
 ]
 
