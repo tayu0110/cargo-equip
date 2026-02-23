@@ -67,7 +67,7 @@ impl<'msg> ProcMacroExpander<'msg> {
             for proc_macro in proc_macros {
                 match proc_macro.kind() {
                     ProcMacroKind::CustomDerive => &mut custom_derive,
-                    ProcMacroKind::FuncLike => &mut func_like,
+                    ProcMacroKind::Bang => &mut func_like,
                     ProcMacroKind::Attr => &mut attr,
                 }
                 .insert(proc_macro.name().to_owned(), (package_id, proc_macro));
@@ -104,7 +104,7 @@ impl<'msg> ProcMacroExpander<'msg> {
         name: &str,
         body: impl FnOnce() -> proc_macro2::TokenStream,
     ) -> anyhow::Result<Option<proc_macro2::Group>> {
-        self.attempt_expand(name, ProcMacroKind::FuncLike, body, None::<fn() -> _>)
+        self.attempt_expand(name, ProcMacroKind::Bang, body, None::<fn() -> _>)
     }
 
     pub(crate) fn attempt_expand_attr(
@@ -125,7 +125,7 @@ impl<'msg> ProcMacroExpander<'msg> {
     ) -> anyhow::Result<Option<proc_macro2::Group>> {
         match kind {
             ProcMacroKind::CustomDerive => &self.custom_derive,
-            ProcMacroKind::FuncLike => &self.func_like,
+            ProcMacroKind::Bang => &self.func_like,
             ProcMacroKind::Attr => &self.attr,
         }
         .get(name)
