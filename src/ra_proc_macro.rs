@@ -6,7 +6,8 @@ use ra_ap_paths::AbsPath;
 use ra_ap_proc_macro_api::{
     msg::PanicMessage, MacroDylib, ProcMacro, ProcMacroKind, ProcMacroServer,
 };
-use ra_ap_tt::{self as tt, DelimiterKind, Leaf, TokenId};
+use ra_ap_span::Span;
+use ra_ap_tt::{self as tt, DelimiterKind, Leaf};
 use semver::Version;
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -135,6 +136,9 @@ impl<'msg> ProcMacroExpander<'msg> {
                     )),
                     attr.map(|f| from_proc_macro2_group(&f())).as_ref(),
                     vec![],
+                    Span::DUMMY,
+                    Span::DUMMY,
+                    Span::DUMMY,
                 )
                 .map_err(|e| anyhow!("{}", e))
                 .with_context(|| "rust-analyzer error")?
@@ -145,7 +149,7 @@ impl<'msg> ProcMacroExpander<'msg> {
     }
 }
 
-fn from_proc_macro2_group(group: &proc_macro2::Group) -> tt::Subtree<TokenId> {
+fn from_proc_macro2_group(group: &proc_macro2::Group) -> tt::Subtree<Span> {
     return tt::Subtree {
         delimiter: from_proc_macro2_delimiter(group.delimiter()),
         token_trees: group
@@ -155,10 +159,10 @@ fn from_proc_macro2_group(group: &proc_macro2::Group) -> tt::Subtree<TokenId> {
             .collect(),
     };
 
-    fn from_proc_macro2_delimiter(delimiter: proc_macro2::Delimiter) -> tt::Delimiter<TokenId> {
+    fn from_proc_macro2_delimiter(delimiter: proc_macro2::Delimiter) -> tt::Delimiter<Span> {
         tt::Delimiter {
-            open: TokenId::unspecified(),
-            close: TokenId::unspecified(),
+            open: Span::DUMMY,
+            close: Span::DUMMY,
             kind: match delimiter {
                 proc_macro2::Delimiter::Parenthesis => DelimiterKind::Parenthesis,
                 proc_macro2::Delimiter::Brace => DelimiterKind::Brace,
@@ -168,7 +172,7 @@ fn from_proc_macro2_group(group: &proc_macro2::Group) -> tt::Subtree<TokenId> {
         }
     }
 
-    fn from_proc_macro2_token_tree(tt: &proc_macro2::TokenTree) -> tt::TokenTree<TokenId> {
+    fn from_proc_macro2_token_tree(tt: &proc_macro2::TokenTree) -> tt::TokenTree<Span> {
         match tt {
             proc_macro2::TokenTree::Group(g) => from_proc_macro2_group(g).into(),
             proc_macro2::TokenTree::Ident(i) => Leaf::from(from_proc_macro2_ident(i)).into(),
@@ -177,18 +181,18 @@ fn from_proc_macro2_group(group: &proc_macro2::Group) -> tt::Subtree<TokenId> {
         }
     }
 
-    fn from_proc_macro2_ident(ident: &proc_macro2::Ident) -> tt::Ident<TokenId> {
+    fn from_proc_macro2_ident(ident: &proc_macro2::Ident) -> tt::Ident<Span> {
         tt::Ident {
             text: ident.to_string().into(),
-            span: TokenId::unspecified(),
+            span: Span::DUMMY,
         }
     }
 
-    fn from_proc_macro2_punct(punct: &proc_macro2::Punct) -> tt::Punct<TokenId> {
+    fn from_proc_macro2_punct(punct: &proc_macro2::Punct) -> tt::Punct<Span> {
         tt::Punct {
             char: punct.as_char(),
             spacing: from_proc_macro2_spacing(punct.spacing()),
-            span: TokenId::unspecified(),
+            span: Span::DUMMY,
         }
     }
 
@@ -199,10 +203,10 @@ fn from_proc_macro2_group(group: &proc_macro2::Group) -> tt::Subtree<TokenId> {
         }
     }
 
-    fn from_proc_macro2_literal(lit: &proc_macro2::Literal) -> tt::Literal<TokenId> {
+    fn from_proc_macro2_literal(lit: &proc_macro2::Literal) -> tt::Literal<Span> {
         tt::Literal {
             text: lit.to_string().into(),
-            span: TokenId::unspecified(),
+            span: Span::DUMMY,
         }
     }
 }
