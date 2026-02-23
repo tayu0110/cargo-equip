@@ -9,7 +9,7 @@ use ra_ap_proc_macro_api::{
 use ra_ap_span::Span;
 use ra_ap_tt::{self as tt, DelimiterKind, Leaf};
 use semver::Version;
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 pub(crate) const MSRV: Version = Version::new(1, 64, 0);
 #[allow(deprecated)]
@@ -52,7 +52,7 @@ impl<'msg> ProcMacroExpander<'msg> {
         proc_macro_srv_exe: &AbsPath,
         dylib_paths: &BTreeMap<&'msg cm::PackageId, &'msg AbsPath>,
     ) -> anyhow::Result<Self> {
-        let server = ProcMacroServer::spawn(proc_macro_srv_exe.to_path_buf())?;
+        let server = ProcMacroServer::spawn(proc_macro_srv_exe.to_path_buf(), &HashMap::default())?;
 
         let mut custom_derive = btreemap!();
         let mut func_like = btreemap!();
