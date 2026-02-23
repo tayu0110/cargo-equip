@@ -6,17 +6,23 @@ use ra_ap_paths::AbsPath;
 use ra_ap_proc_macro_api::{
     msg::PanicMessage, MacroDylib, ProcMacro, ProcMacroKind, ProcMacroServer,
 };
-use ra_ap_span::Span;
-use ra_ap_tt::{self as tt, DelimiterKind, Leaf};
+use ra_ap_span::{FileId, Span, SpanAnchor, SyntaxContextId, ROOT_ERASED_FILE_AST_ID};
+use ra_ap_tt::{self as tt, DelimiterKind, Leaf, TextRange, TextSize};
 use semver::Version;
 use std::{
-    collections::{BTreeMap, BTreeSet, HashMap},
+    collections::{BTreeMap, BTreeSet},
     iter::empty,
 };
 
 pub(crate) const MSRV: Version = Version::new(1, 64, 0);
-#[allow(deprecated)]
-const DUMMY_SPAN: Span = Span::DUMMY;
+const DUMMY_SPAN: Span = Span {
+    range: TextRange::empty(TextSize::new(0)),
+    anchor: SpanAnchor {
+        file_id: FileId::from_raw(0xe4e4e4),
+        ast_id: ROOT_ERASED_FILE_AST_ID,
+    },
+    ctx: SyntaxContextId::ROOT,
+};
 
 pub(crate) fn list_proc_macro_dylibs<P: FnMut(&cm::PackageId) -> bool>(
     cargo_messages: &[cm::Message],
@@ -55,8 +61,10 @@ impl<'msg> ProcMacroExpander<'msg> {
         proc_macro_srv_exe: &AbsPath,
         dylib_paths: &BTreeMap<&'msg cm::PackageId, &'msg AbsPath>,
     ) -> anyhow::Result<Self> {
-        let server =
-            ProcMacroServer::spawn(&proc_macro_srv_exe.to_path_buf(), &HashMap::default())?;
+        let server = ProcMacroServer::spawn(
+            &proc_macro_srv_exe.to_path_buf(),
+            empty::<(String, String)>(),
+        )?;
 
         let mut custom_derive = btreemap!();
         let mut func_like = btreemap!();
